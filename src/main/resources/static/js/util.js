@@ -8,6 +8,7 @@ function showMessageError(msg) {
     setTimeout(removeMessage, 7000)
     //alert-success
 }
+
 function showMessageSuccess(msg) {
     $(".alert-success").removeClass("hide")
     $(".alert-success").addClass("show")
@@ -29,23 +30,55 @@ function getCrawlerProcess(id) {
     console.log("getCrawlerProcess");
 
     var jqxhr = $.get( "/crawler/"+id, function() {
-        //showMessageSuccess( "success" );
+
+    }).done(function(data) {
+
+        loadProcessInput(data)
+        $("#title").html("Cadastro")
+        $("#submit").attr("value", "Cadastrar")
+
     })
+    .fail(function(err) {
+        load()
+        if (err.status === 404){
+            showMessageError( "N&atildeo foi possivel encontrar o processo '"+id+"'" );
+        }else{
+            showMessageError( "Ocorreu um erro de comunica&ccedil;&atilde;o com esse servi&ccedil;o, por favor tente mais tarde" );
+        }
 
-        .done(function(data) {
-            load()
-            toggle()
-            objProcess = data
-            $("#input_title").val(objProcess.title)
-            $("#input_pub").val(objProcess.externalIdProcess)
-            $("#input_internacional_order").val(objProcess.internationalOrder)
-            $("#input_publication_date").val(objProcess.publicationDate)
-            $("#input_claimant").val(objProcess.claimant)
-            $("#back").toggle()
-            $("#title").html("Cadastro")
-            $("#submit").attr("value","Cadastrar")
-            $("#submit").attr("data-step","2")
+    });
 
+    return false;
+
+}
+
+function loadProcessInput(data) {
+    load()
+    toggle()
+    objProcess = data;
+    $("#input_title").val(objProcess.title)
+    $("#input_pub").val(objProcess.externalIdProcess)
+    $("#input_internacional_order").val(objProcess.internationalOrder)
+    $("#input_publication_date").val(objProcess.publicationDate)
+    $("#input_claimant").val(objProcess.claimant)
+    $("#back").toggle()
+
+    $("#submit").attr("data-step", "2")
+}
+
+function getInternalProcess(id) {
+    console.log("getInternalProcess");
+
+    var jqxhr = $.get( "/process/search/"+id, function() {
+        //showMessageSuccess( "success" );
+    }).done(function(data) {
+            if (data.length === 0){
+                getCrawlerProcess(id)
+            }else {
+                $("#submit").attr("value", "Processo ja cadastrado")
+                $("#submit").attr("disabled", true)
+                loadProcessInput(data[0])
+            }
         })
         .fail(function() {
             load()
@@ -64,7 +97,6 @@ function postProcess() {
         contentType: "application/json",
         dataType: "json",
     }, JSON.stringify(objProcess), function() {
-        showMessageSucess( "Processo Cadastro com Sucesso!" );
     })
         .done(function(data) {
             load()
@@ -74,12 +106,13 @@ function postProcess() {
             $("#title").html("Pesquisa")
             $("#submit").attr("value","Pesquisar")
             $("#submit").attr("data-step","1")
+            showMessageSuccess( "Processo Cadastro com Sucesso!" );
 
         })
         .fail(function() {
             //$("#back").toggle()
             load()
-            showMessageError( "Ocorreu um erro de comunicação com esse serviço, por favor tente mais tarde" );
+            showMessageError( "Ocorreu um erro de comunica&ccedil;&atilde;o com esse servi&ccedil;o, por favor tente mais tarde" );
 
         })
         .always(function() {},"json");
@@ -103,6 +136,7 @@ $("#back").click(function() {
     $("#submit").attr("value","Pesquisar")
     $("#submit").attr("data-step","1")
     $("#back").toggle()
+    $("#submit").attr("disabled", false)
     toggle();
 });
 
@@ -110,9 +144,8 @@ $("#form").submit(function() {
     load();
     var dataStep = $("#submit").attr("data-step")
     if (dataStep == "1"){
-
         var termSearch = $("#term_search").val()
-        getCrawlerProcess(termSearch)
+        getInternalProcess(termSearch)
     }
     if (dataStep == "2"){
         postProcess()
@@ -170,22 +203,22 @@ function getProcessAll() {
 
 }
 function getProcessDatabase(term) {
-    console.log("getCrawlerProcess");
 
     let jqxhr = $.get( "/process/search/"+term, function() {
-        console.log( "success" );
+
     }).done(function(objProcess) {
-        foreachProcess(objProcess)
+        if (objProcess.length == 0){
+            showMessageError( "N&atildeo foi possivel encontrar o processo '"+term+"'" );
+        }else{
+            foreachProcess(objProcess)
+        }
     })
-        .fail(function() {
-            console.log( "error" );
-        })
-        .always(function() {
-            console.log( "finished" );
-        });
+    .fail(function() {
+        showMessageError( "Ocorreu um erro de comunica&ccedil;&atilde;o com esse servi&ccedil;o, por favor tente mais tarde" );
+    });
 
     jqxhr.always(function() {
-        load()
+        loadInternal()
     });
     return false;
 
@@ -204,6 +237,10 @@ function loadInternal(){
 $("#form-internal").submit(function() {
     loadInternal();
     let termSearch = $("#term_search").val()
-    getProcessDatabase(termSearch)
+    if (termSearch.length === 0){
+        getProcessAll()
+    }else{
+        getProcessDatabase(termSearch)
+    }
     return false;
 });

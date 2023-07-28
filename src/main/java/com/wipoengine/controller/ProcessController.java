@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +33,15 @@ public class ProcessController {
 
     @GetMapping("/process")
     public  ResponseEntity<Object> getAllProcess(){
-        return ResponseEntity.status(HttpStatus.OK).body(processRepository.findFirst50ByOrderByCreatedAtDesc());
+        Optional<List<ProcessModel>> optionalListProcessModel= processRepository.findFirst50ByOrderByCreatedAtDesc();
+        List<ProcessModel> listProcessModel = optionalListProcessModel.get();
+        if (!listProcessModel.isEmpty()){
+            for (ProcessModel processModel : listProcessModel){
+                UUID id = processModel.getIdProcess();
+                processModel.add(linkTo(methodOn(ProcessController.class).getOneProcess(id)).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(optionalListProcessModel);
     }
 
 
@@ -40,18 +51,26 @@ public class ProcessController {
         if (process.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process not found");
         }
+        process.get().add(linkTo(methodOn(ProcessController.class).getAllProcess()).withSelfRel());
         return ResponseEntity.status(HttpStatus.OK).body(process.get());
     }
 
     @GetMapping("/process/search/{term}")
     public ResponseEntity<Object> getSearchProcess(@PathVariable(value="term") String term){
 
-        Optional<List<ProcessModel>> process = processRepository.findByExternalIdProcessContainingOrClaimantContaining(term, term);
+        Optional<List<ProcessModel>> optionalListProcessModel = processRepository.findByExternalIdProcessContainingOrClaimantContaining(term, term);
 
-        if (process.isEmpty()){
+        if (optionalListProcessModel.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process not found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(process);
+        List<ProcessModel> listProcessModel = optionalListProcessModel.get();
+        if (!listProcessModel.isEmpty()){
+            for (ProcessModel processModel : listProcessModel){
+                UUID id = processModel.getIdProcess();
+                processModel.add(linkTo(methodOn(ProcessController.class).getOneProcess(id)).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(optionalListProcessModel);
     }
 
     @PutMapping("/process/{id}")

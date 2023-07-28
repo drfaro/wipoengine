@@ -18,18 +18,19 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 public class CrawlerController {
 
     @GetMapping("/crawler/{id}")
-    public ResponseEntity<ProcessRecordDto> crawler(@PathVariable(value="id") String id) throws Exception {
+    public ResponseEntity<Object> crawler(@PathVariable(value="id") String id) throws Exception {
         //TODO: remover todas as strings daqui
         System.out.println("Estamos começando !!!!!!");
 
         String url = "https://patentscope.wipo.int/search/pt/detail.jsf?docId="+id+"&redirectedID=true";
-
+        ProcessRecordDto processRecordDto;
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
 
@@ -37,22 +38,29 @@ public class CrawlerController {
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(1500));
 
-        WebElement title = driver.findElement(By.cssSelector(".PCTtitle"));
-        WebElement claimant = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[8]/span[2]/span/ul"));
-        WebElement dataPubText = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[2]/span[2]"));
-        WebElement internationalOrder = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[3]/span[2]"));
 
-        String textDateStr = dataPubText.getText();
-        String[] textDate = textDateStr.split("\\.");
+        try {
+            WebElement title = driver.findElement(By.cssSelector(".PCTtitle"));
+            WebElement claimant = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[8]/span[2]/span/ul"));
+            WebElement dataPubText = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[2]/span[2]"));
+            WebElement internationalOrder = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/div[1]/div[2]/form/div/div/div/div[1]/div/div/div[2]/div/div[1]/div[3]/span[2]"));
 
-        LocalDate localDate = LocalDate.of(Integer.parseInt(textDate[2]), Integer.parseInt(textDate[1]), Integer.parseInt(textDate[0]));
-        Date publicationDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            String textDateStr = dataPubText.getText();
+            String[] textDate = textDateStr.split("\\.");
 
-        var processRecordDto = new ProcessRecordDto(title.getText(), id, internationalOrder.getText(), publicationDate, claimant.getText());
+            LocalDate localDate = LocalDate.of(Integer.parseInt(textDate[2]), Integer.parseInt(textDate[1]), Integer.parseInt(textDate[0]));
+            Date publicationDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-        driver.quit();
+            processRecordDto = new ProcessRecordDto(title.getText(), id, internationalOrder.getText(), publicationDate, claimant.getText());
 
-        return ResponseEntity.status(HttpStatus.OK).body(processRecordDto);
+            driver.quit();
+
+            return ResponseEntity.status(HttpStatus.OK).body(processRecordDto);
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("null");
+        }
+
     }
 
 }

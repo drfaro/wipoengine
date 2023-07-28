@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.util.UUID;
         uniqueConstraints=
         @UniqueConstraint(columnNames={"externalIdProcess"})
 )
-public class ProcessModel implements Serializable {
+public class ProcessModel extends RepresentationModel<ProcessModel> implements Serializable {
 
     private static final long serialVersionId = 1L;
 
