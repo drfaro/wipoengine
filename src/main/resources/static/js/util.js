@@ -120,7 +120,6 @@ function postProcess() {
     return false;
 
 }
-//Todo: validação do formulario
 function toggle(){
     $("#form-search").slideToggle(500)
     $("#form-register").slideToggle(500)
@@ -182,7 +181,6 @@ function foreachProcess(objProcess) {
 }
 
 function getProcessAll() {
-    console.log("getProcessAll");
 
     let jqxhr = $.get( "/process", function() {
         console.log( "success" );
@@ -223,9 +221,6 @@ function getProcessDatabase(term) {
     return false;
 
 }
-
-//Todo: validação do formulario
-
 
 function loadInternal(){
     $("#load").slideToggle(500)

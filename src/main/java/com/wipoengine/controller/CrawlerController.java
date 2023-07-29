@@ -26,8 +26,6 @@ public class CrawlerController {
 
     @GetMapping("/crawler/{id}")
     public ResponseEntity<Object> crawler(@PathVariable(value="id") String id) throws Exception {
-        //TODO: remover todas as strings daqui
-        System.out.println("Estamos começando !!!!!!");
 
         String url = "https://patentscope.wipo.int/search/pt/detail.jsf?docId="+id+"&redirectedID=true";
         ProcessRecordDto processRecordDto;
