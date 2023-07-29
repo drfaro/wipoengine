@@ -1,13 +1,21 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
     <title>Welcome</title>
+
+    <link rel="icon" type="image/x-icon" href="/static/image/favicon.ico">
+    <meta charset="utf-8"
+          name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    
     <link href="webjars/bootstrap/4.1.2/css/bootstrap.min.css"
           rel="stylesheet">
 
     <link href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           rel="stylesheet">
 
-    <link href="../css/style.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
 
 </head>
 <body>
@@ -25,7 +33,7 @@
     </button>
 </div>
 
-<div id="linkTo" class="hide"><a href="/"><input type="button" class="btn submit_btn" value="Cadastrar" ></a></div>
+<div id="linkTo" class="hide"><a href="/"> <input type="button" class="btn submit_btn" value="Cadastrar" ></a></div>
 
 <div class="container internal">
     <div class="row  align-items-end">
@@ -68,9 +76,10 @@
     </div>
 </div>
 
-<script src="webjars/jquery/3.5.0/jquery.min.js"></script>
-<script src="webjars/bootstrap/4.1.2/js/bootstrap.min.js"></script>
-<script src="../js/util.js"></script>
+<script src="${pageContext.request.contextPath}/webjars/jquery/3.5.0/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}/webjars/bootstrap/4.1.2/js/bootstrap.min.js"></script>
+<script src="/static/js/util.js"></script>
+
 
 <script>
 

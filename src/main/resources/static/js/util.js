@@ -27,7 +27,6 @@ $(".close").click(function (){
 });
 
 function getCrawlerProcess(id) {
-    console.log("getCrawlerProcess");
 
     var jqxhr = $.get( "/crawler/"+id, function() {
 
@@ -67,10 +66,8 @@ function loadProcessInput(data) {
 }
 
 function getInternalProcess(id) {
-    console.log("getInternalProcess");
 
     var jqxhr = $.get( "/process/search/"+id, function() {
-        //showMessageSuccess( "success" );
     }).done(function(data) {
             if (data.length === 0){
                 getCrawlerProcess(id)
@@ -102,7 +99,6 @@ function postProcess() {
             load()
             toggle()
             $("#back").toggle()
-            console.log(data)
             $("#title").html("Pesquisa")
             $("#submit").attr("value","Pesquisar")
             $("#submit").attr("data-step","1")
@@ -158,7 +154,6 @@ $("#form").submit(function() {
 
 let tr = ""
 function foreachProcess(objProcess) {
-    console.log(objProcess)
     let tbody = $("#table-list tbody")
 
     tbody.html("")
@@ -183,16 +178,13 @@ function foreachProcess(objProcess) {
 function getProcessAll() {
 
     let jqxhr = $.get( "/process", function() {
-        console.log( "success" );
+
     }).done(function(objProcess) {
         foreachProcess(objProcess)
     })
-        .fail(function() {
-            console.log( "error" );
-        })
-        .always(function() {
-            console.log( "finished" );
-        });
+    .fail(function() {
+        showMessageError( "Ocorreu um erro de comunica&ccedil;&atilde;o com esse servi&ccedil;o, por favor tente mais tarde" );
+    });
 
     jqxhr.always(function() {
         loadInternal()

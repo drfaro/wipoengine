@@ -1,20 +1,22 @@
 package com.wipoengine;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import java.util.Scanner;
+@SpringBootApplication()
+public class WipoengineApplication extends SpringBootServletInitializer {
 
-@SpringBootApplication
-public class WipoengineApplication {
-
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		return builder.sources(WipoengineApplication.class);
+	}
 	public static void main(String[] args) throws IOException {
 		SpringApplication.run(WipoengineApplication.class, args);
-
 	}
+
+
 
 }

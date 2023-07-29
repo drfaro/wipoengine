@@ -1,7 +1,6 @@
 package com.wipoengine.controller;
 
 import com.wipoengine.dtos.ProcessRecordDto;
-import com.wipoengine.models.ProcessModel;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,9 +16,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 public class CrawlerController {
